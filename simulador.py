@@ -1,5 +1,5 @@
-import math
-import random
+from math import log
+from random import random
 
 tempo_medio_clientes = 1.0 / 10  # arrumar
 tempo_medio_atendimento = 1.0 / 8 # arrumar
@@ -19,7 +19,7 @@ def minimo(a, b):
 COPIAR ENUNCIADO DA GRAVAÇÃO
 """
 # armazena o tempo de chegada do proximo cliente
-chegada_cliente = (-1.0/tempo_medio_clientes) * math.log(random.random())
+chegada_cliente = (-1.0/tempo_medio_clientes) * log(random())
 
 
 # armazena o tempo em que o cliente que estiver em atendimento saira do comercio
@@ -52,7 +52,7 @@ while(tempo < tempo_simulacao):
 
 
         # gera o tempo de chegada do proximo cliente
-        chegada_cliente = tempo + ((-1.0/tempo_medio_clientes) * math.log(random.random()))
+        chegada_cliente = tempo + (-1.0/tempo_medio_clientes) * log(random())
         # TODO gerar tempo de chegada do proximo cliente
     else:
         # evento de saida de cliente
@@ -61,7 +61,7 @@ while(tempo < tempo_simulacao):
         # e passa a estar ainda no comercio, mas em atendimento no caixa
         if(fila):
             fila = fila - 1.0
-            saida_atendimento = tempo + ((-1.0/tempo_medio_atendimento) * math.log(random.random()))
+            saida_atendimento = tempo + (-1.0/tempo_medio_atendimento) * log(random())
             print(f'saida do cliente {saida_atendimento}')
             print(f'Fila: {fila}')
         else:
