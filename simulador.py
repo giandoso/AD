@@ -4,7 +4,7 @@ from random import random
 tempo_medio_clientes = 1.0 / 10  # arrumar
 tempo_medio_atendimento = 1.0 / 8 # arrumar
 tempo=0
-tempo_simulacao=100000
+tempo_simulacao=1000
 
 
 def minimo(a, b):
@@ -21,7 +21,8 @@ COPIAR ENUNCIADO DA GRAVAÇÃO
 # armazena o tempo de chegada do proximo cliente
 chegada_cliente = (-1.0/tempo_medio_clientes) * log(random())
 
-
+# armazena o somatorio do tempo ocioso do caixa
+tempo_ocioso_total = 0.0
 # armazena o tempo em que o cliente que estiver em atendimento saira do comercio
 # saida_atendimento == 0.0 indica caixa ocioso
 saida_atendimento = 0.0
@@ -64,9 +65,16 @@ while(tempo < tempo_simulacao):
             saida_atendimento = tempo + (-1.0/tempo_medio_atendimento) * log(random())
             print(f'saida do cliente {saida_atendimento}')
             print(f'Fila: {fila}')
+
         else:
+            tempo_ocioso = chegada_cliente - saida_atendimento
+            print(f'Tempo ocioso: {tempo_ocioso}')
+            tempo_ocioso_total += tempo_ocioso
             saida_atendimento = 0.0
-            print(f'Caixa ocioso até {chegada_cliente}')
+
+            # print(f'Caixa ocioso até {chegada_cliente}')
     print('----')
+print(f'Tempo ocioso total: {tempo_ocioso_total}')
+print(f'Taxa de utilização: {tempo_ocioso_total/tempo}')
 
 
