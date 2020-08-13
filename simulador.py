@@ -1,14 +1,13 @@
 from math import log
 from random import random
 
-tempo_medio_clientes = 1.0 / 0.25  # 1.0 / tempo medio entre a chegada de clientes em segundos
-tempo_medio_atendimento = 1.0 / 0.15
+tempo_medio_clientes = 1.0 / 3.00  # 1.0 / tempo medio entre a chegada de clientes em segundos
+tempo_medio_atendimento = 1.0 / 2.97
 tempo = 0
 tempo_simulacao = 100000
 
 
 def minimo(a, b):
-    # b = 0.0 if b is None else b
     if a < b:
         return a
     else:
