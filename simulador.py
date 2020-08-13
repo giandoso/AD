@@ -4,7 +4,7 @@ from random import random
 tempo_medio_clientes = 1.0 / 3.00  # 1.0 / tempo medio entre a chegada de clientes em segundos
 tempo_medio_atendimento = 1.0 / 2.97
 tempo = 0
-tempo_simulacao = 100000
+tempo_simulacao = 500000
 
 
 def minimo(a, b):
@@ -27,8 +27,8 @@ def minimo(a, b):
 # armazena o tempo de chegada do proximo cliente
 chegada_cliente = (-1.0/tempo_medio_clientes) * log(random())
 
-# armazena o somatorio do tempo ocioso do caixa
-tempo_ocioso_total = 0.0
+# armazena o somatorio do tempo ocupado do caixa
+soma_atendimentos = 0.0
 
 # armazena o tempo em que o cliente que estiver em atendimento saira do comercio
 saida_atendimento = 0.0
@@ -66,21 +66,25 @@ while tempo < tempo_simulacao:
         # e passa a estar ainda no comercio, mas em atendimento no caixa
         if fila:
             fila -= 1.0
-            saida_atendimento = tempo + (-1.0/tempo_medio_atendimento) * log(random())
+            tempo_atendimento = -1.0/tempo_medio_atendimento * log(random())
+            saida_atendimento = tempo + tempo_atendimento
+            soma_atendimentos += tempo_atendimento
+
             print(f'saida do cliente {saida_atendimento}')
             print(f'Fila: {fila}')
 
         else:
             tempo_ocioso = chegada_cliente - saida_atendimento
             print(f'Tempo ocioso: {tempo_ocioso}')
-            tempo_ocioso_total += tempo_ocioso
+            # tempo_ocioso_total += tempo_ocioso
             saida_atendimento = 0.0
     print('----')
 
+# trata problema de tempo de finalização
+# o valor computado na iteração nao condiz com o fim da simulacao
+if saida_atendimento > tempo:
+    soma_atendimentos -= (saida_atendimento - tempo)
 
-tempo_ocupado_total = tempo - tempo_ocioso_total
-taxa_utilizacao = tempo_ocupado_total / tempo
-print(f'Tempo ocioso total: {tempo_ocioso_total}')
-print(f'Tempo ocupado total: {tempo_ocupado_total}')
+ocupacao = soma_atendimentos / tempo
 
-print(f'Taxa de utilização(%): {taxa_utilizacao * 100}')
+print(f'Taxa de utilização(%): {ocupacao * 100}')
