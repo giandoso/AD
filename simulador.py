@@ -104,4 +104,4 @@ if saida_atendimento > tempo:
 
 print(f'Taxa de utilização(%): {(soma_atendimentos / tempo) * 100}')
 print(f'E[N]: {soma_areas/tempo}')
-print(f'E[W]: {((soma_area_entrada - soma_area_saida) / eventos_entrada) / tempo}')
+print(f'E[W]: {(soma_area_entrada - soma_area_saida) / eventos_entrada}')
