@@ -1,10 +1,10 @@
 from math import log
 from random import random
 
-tempo_medio_clientes = 1.0 / 3.00  # 1.0 / tempo medio entre a chegada de clientes em segundos
-tempo_medio_atendimento = 1.0 / 2.97
+tempo_medio_clientes = 1.0 / 20  # 1.0 / tempo medio entre a chegada de clientes em segundos
+tempo_medio_atendimento = 1.0 / 20
 tempo = 0
-tempo_simulacao = 500000
+tempo_simulacao = 5000
 
 
 def minimo(a, b):
@@ -29,6 +29,11 @@ chegada_cliente = (-1.0/tempo_medio_clientes) * log(random())
 
 # armazena o somatorio do tempo ocupado do caixa
 soma_atendimentos = 0.0
+soma_areas = 0.0
+soma_area_entrada = 0.0
+soma_area_saida = 0.0
+eventos_entrada = 0.0
+eventos_saida = 0.0
 
 # armazena o tempo em que o cliente que estiver em atendimento saira do comercio
 saida_atendimento = 0.0
@@ -50,6 +55,7 @@ while tempo < tempo_simulacao:
         print(f'Chegada do cliente {chegada_cliente}')
         # evento de chegada de cliente
         fila += 1.0
+        eventos_entrada += 1.0
         print(f'Fila: {fila}')
         # indica que o caixa esta ocioso
         # logo, pode-se comecar a atender
@@ -58,7 +64,11 @@ while tempo < tempo_simulacao:
             saida_atendimento = tempo
 
         # gera o tempo de chegada do proximo cliente
+        tempo_anterior = chegada_cliente
         chegada_cliente = tempo + (-1.0/tempo_medio_clientes) * log(random())
+        soma_areas += (chegada_cliente - tempo_anterior) * (fila - 1)
+        soma_area_entrada += (chegada_cliente - tempo_anterior) * eventos_entrada
+
     else:
         # evento de saida de cliente
         # a cabeca da fila nao consiste no cliente em atendimento.
@@ -66,9 +76,14 @@ while tempo < tempo_simulacao:
         # e passa a estar ainda no comercio, mas em atendimento no caixa
         if fila:
             fila -= 1.0
+            eventos_saida += 1.0
+            # tempo_anterior = tempo
             tempo_atendimento = -1.0/tempo_medio_atendimento * log(random())
             saida_atendimento = tempo + tempo_atendimento
+
             soma_atendimentos += tempo_atendimento
+            soma_areas += (saida_atendimento - tempo) * (fila - 1)
+            soma_area_saida += (saida_atendimento - tempo) * eventos_saida
 
             print(f'saida do cliente {saida_atendimento}')
             print(f'Fila: {fila}')
@@ -84,7 +99,9 @@ while tempo < tempo_simulacao:
 # o valor computado na iteração nao condiz com o fim da simulacao
 if saida_atendimento > tempo:
     soma_atendimentos -= (saida_atendimento - tempo)
+    soma_areas -= (saida_atendimento - tempo)
 
-ocupacao = soma_atendimentos / tempo
 
-print(f'Taxa de utilização(%): {ocupacao * 100}')
+print(f'Taxa de utilização(%): {(soma_atendimentos / tempo) * 100}')
+print(f'E[N]: {soma_areas/tempo}')
+print(f'E[W]: {((soma_area_entrada - soma_area_saida) / eventos_entrada) / tempo}')
