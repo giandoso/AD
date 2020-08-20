@@ -1,10 +1,21 @@
 from math import log
 from random import random
 
-tempo_medio_clientes = 1.0 / 20  # 1.0 / tempo medio entre a chegada de clientes em segundos
-tempo_medio_atendimento = 1.0 / 20
+# case 1
+# tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 0.25, 1.0 / 0.15
+
+# case 2
+# tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 2, 1.0 / 1.6
+
+# case 3
+# tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 0.5, 1.0 / 0.45
+
+# case 4
+tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 3, 1.0 / 2.97
+
+
 tempo = 0
-tempo_simulacao = 5000
+tempo_simulacao = 10000
 
 
 def minimo(a, b):
@@ -29,6 +40,8 @@ chegada_cliente = (-1.0/tempo_medio_clientes) * log(random())
 
 # armazena o somatorio do tempo ocupado do caixa
 soma_atendimentos = 0.0
+
+
 soma_areas = 0.0
 soma_area_entrada = 0.0
 soma_area_saida = 0.0
@@ -64,7 +77,7 @@ while tempo < tempo_simulacao:
             saida_atendimento = tempo
 
         # gera o tempo de chegada do proximo cliente
-        tempo_anterior = chegada_cliente
+        tempo_anterior = tempo
         chegada_cliente = tempo + (-1.0/tempo_medio_clientes) * log(random())
         soma_areas += (chegada_cliente - tempo_anterior) * (fila - 1)
         soma_area_entrada += (chegada_cliente - tempo_anterior) * eventos_entrada
@@ -82,16 +95,13 @@ while tempo < tempo_simulacao:
             saida_atendimento = tempo + tempo_atendimento
 
             soma_atendimentos += tempo_atendimento
-            soma_areas += (saida_atendimento - tempo) * (fila - 1)
+            soma_areas += (saida_atendimento - tempo) * (fila - 1 )
             soma_area_saida += (saida_atendimento - tempo) * eventos_saida
 
             print(f'saida do cliente {saida_atendimento}')
             print(f'Fila: {fila}')
 
         else:
-            tempo_ocioso = chegada_cliente - saida_atendimento
-            print(f'Tempo ocioso: {tempo_ocioso}')
-            # tempo_ocioso_total += tempo_ocioso
             saida_atendimento = 0.0
     print('----')
 
@@ -101,7 +111,20 @@ if saida_atendimento > tempo:
     soma_atendimentos -= (saida_atendimento - tempo)
     soma_areas -= (saida_atendimento - tempo)
 
+U = ((soma_atendimentos / tempo) * 100)
+L = soma_areas/tempo
+W = (soma_area_entrada - soma_area_saida) / eventos_entrada
+_lambda = eventos_entrada/tempo
 
-print(f'Taxa de utilização(%): {(soma_atendimentos / tempo) * 100}')
-print(f'E[N]: {soma_areas/tempo}')
-print(f'E[W]: {(soma_area_entrada - soma_area_saida) / eventos_entrada}')
+print_mode = 1  # small
+# print_mode = 2  # details
+
+if print_mode == 1:
+    print(f'{U}\t{L}\t{W}\t{_lambda}'.replace('.', ','))
+else:
+    print(f'Taxa de utilização(%): {U:.4f}')
+    print(f'                    L: {L:.4f}')
+    print(f'                    W: {W:.4f}')
+    print(f'               lambda: {_lambda:.4f}')
+
+print(f'Validação de little: {abs(L - _lambda * W)}')
