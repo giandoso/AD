@@ -8,10 +8,10 @@ from random import random
 # tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 2, 1.0 / 1.6
 
 # case 3
-# tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 0.5, 1.0 / 0.45
+tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 0.5, 1.0 / 0.45
 
 # case 4
-tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 3, 1.0 / 2.97
+# tempo_medio_clientes, tempo_medio_atendimento = 1.0 / 3, 1.0 / 2.97
 
 
 tempo = 0
@@ -41,8 +41,11 @@ chegada_cliente = (-1.0/tempo_medio_clientes) * log(random())
 # armazena o somatorio do tempo ocupado do caixa
 soma_atendimentos = 0.0
 
-
+numero_eventos = 0.0
 soma_areas = 0.0
+tempo_anterior = 0.0
+
+
 soma_area_entrada = 0.0
 soma_area_saida = 0.0
 eventos_entrada = 0.0
@@ -77,9 +80,13 @@ while tempo < tempo_simulacao:
             saida_atendimento = tempo
 
         # gera o tempo de chegada do proximo cliente
-        tempo_anterior = tempo
         chegada_cliente = tempo + (-1.0/tempo_medio_clientes) * log(random())
-        soma_areas += (chegada_cliente - tempo_anterior) * (fila - 1)
+
+        # calculo do E[N]
+        soma_areas += (tempo - tempo_anterior) * numero_eventos
+        tempo_anterior = tempo
+        numero_eventos += 1
+
         soma_area_entrada += (chegada_cliente - tempo_anterior) * eventos_entrada
 
     else:
@@ -95,14 +102,21 @@ while tempo < tempo_simulacao:
             saida_atendimento = tempo + tempo_atendimento
 
             soma_atendimentos += tempo_atendimento
-            soma_areas += (saida_atendimento - tempo) * (fila - 1 )
-            soma_area_saida += (saida_atendimento - tempo) * eventos_saida
 
             print(f'saida do cliente {saida_atendimento}')
             print(f'Fila: {fila}')
 
         else:
             saida_atendimento = 0.0
+
+        # calculo do E[N]
+        if tempo_anterior < tempo:
+            soma_areas += (tempo - tempo_anterior) * numero_eventos
+            tempo_anterior = tempo
+            numero_eventos -= 1
+
+        soma_area_saida += (saida_atendimento - tempo) * eventos_saida
+
     print('----')
 
 # trata problema de tempo de finalização
@@ -111,13 +125,15 @@ if saida_atendimento > tempo:
     soma_atendimentos -= (saida_atendimento - tempo)
     soma_areas -= (saida_atendimento - tempo)
 
+# soma_areas += (tempo - tempo_anterior) * numero_eventos
+
 U = ((soma_atendimentos / tempo) * 100)
 L = soma_areas/tempo
 W = (soma_area_entrada - soma_area_saida) / eventos_entrada
 _lambda = eventos_entrada/tempo
 
-print_mode = 1  # small
-# print_mode = 2  # details
+# print_mode = 1  # small
+print_mode = 2  # details
 
 if print_mode == 1:
     print(f'{U}\t{L}\t{W}\t{_lambda}'.replace('.', ','))
